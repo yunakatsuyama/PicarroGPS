@@ -42,9 +42,9 @@ import warnings
 import glob
 import subprocess
 
-filename = '/Users/mameyuna/stu/Romania_data/LGR 2026-01-23 Software Backup/PythonPrograms/PicarroGPSconfig.cfg'
-#def read_config(filename='PicarroGPSconfig.cfg'):
-def read_config(filename = filename):
+#filename = '/Users/mameyuna/stu/Romania_data/LGR 2026-01-23 Software Backup/PythonPrograms/PicarroGPS/code/PicarroGPSconfig.cfg'
+def read_config(filename='PicarroGPSconfig.cfg'):
+#def read_config(filename = ):
     """Reads config file and returns config dictionary.
 
     Parameters
@@ -67,9 +67,15 @@ def read_config(filename = filename):
     config = configparser.ConfigParser(allow_no_value=True)
     file = os.path.abspath(filename)
     config.read(file)
-    #files_read = config.read(file)
-    #print("Config file read:", files_read)
-    #print("Sections found:", config.sections())
+    print("CONFIG FILE:", file)
+    print("EXISTS:", os.path.exists(file))
+
+    config.read(file)
+    print("FILES READ:", config.read(file))          # 何を読めたか
+    print("SECTIONS FOUND:", config.sections())     # 実際に認識されたセクション
+        #files_read = config.read(file)
+        #print("Config file read:", files_read)
+        #print("Sections found:", config.sections())
 
     return config
 
@@ -200,7 +206,7 @@ def track_to_kml(filename='Picarro', timelag=16, vrange=[380.0,420.0,1.80,2.0,0.
     :func:`PicarroGPS.code.set_systime.get_gpscom` : set up serial connection
     """
 
-    config = read_config(filename)
+    config = read_config()
     print(f"here config{config}")
     print("CONFIG SECTIONS:", config.sections())
 
