@@ -71,8 +71,8 @@ def read_config(filename='PicarroGPSconfig.cfg'):
     print("EXISTS:", os.path.exists(file))
 
     config.read(file)
-    print("FILES READ:", config.read(file))          # 何を読めたか
-    print("SECTIONS FOUND:", config.sections())     # 実際に認識されたセクション
+    print("FILES READ:", config.read(file))   
+    print("SECTIONS FOUND:", config.sections())    
         #files_read = config.read(file)
         #print("Config file read:", files_read)
         #print("Sections found:", config.sections())
@@ -239,12 +239,14 @@ def track_to_kml(filename='Picarro', timelag=16, vrange=[380.0,420.0,1.80,2.0,0.
             columns = [0,4,6,8,9,10,11,12]
             datanames = ['0','1','2','3','4','5','6','7']
 
-
+   
     curr_pos = KML.kmlinit(filename + '_pos')
     flighttrack = KML.kmlinit(filename + '_track')
     concCH4 = KML.kmlinit(filename + '_CH4')
     concCO2 = KML.kmlinit(filename + '_CO2')
     concH2O = KML.kmlinit(filename + '_H2O')
+
+
 
     iconfolder = config['Paths']['iconfolder']
     print(f"here config iconfolder {config['Paths']['iconfolder']}")
@@ -342,13 +344,21 @@ def track_to_kml(filename='Picarro', timelag=16, vrange=[380.0,420.0,1.80,2.0,0.
 #                                        '\nMeasNr ', str(data[6]),
 #                                        '\nMeasTime ', str(datin['0'][0]),
 #                                        '\nGPS ', '  '.join((coorout.split(','))[:2])]))
-        with open(filename + filenames[0] + '.kml', 'w') as filepos:
+        # with open(filename + filenames[0] + '.kml', 'w') as filepos:
+        #     filepos.write(KML.etree.tounicode(curr_pos, pretty_print=True))
+        # Add replace
+        with open(filename + filenames[0] + '.tmp', 'w') as filepos:
             filepos.write(KML.etree.tounicode(curr_pos, pretty_print=True))
-        with open(filename + filenames[1] + '.kml', 'w') as filetrck:
+        os.replace(filename + filenames[0] + '.tmp', filename + filenames[0] + '.kml')    
+
+        with open(filename + filenames[1] + '.tmp', 'w') as filetrck:
             filetrck.write(KML.etree.tounicode(flighttrack, pretty_print=True))
+        os.replace(filename + filenames[1] + '.tmp', filename + filenames[1] + '.kml')
+
         for filenr, concGAS in enumerate(conckml):
-            with open(filename + filenames[filenr+2] + '.kml', 'w') as file:
+            with open(filename + filenames[filenr+2] + '.tmp', 'w') as file:
                 file.write(KML.etree.tounicode(concGAS, pretty_print=True))
+            os.replace(filename + filenames[filenr+2] + '.tmp', filename + filenames[filenr+2] + '.kml')    
 #            shutil.copy(filename + filenames[filenr+2] + '.kml', filename + filenames[filenr+2]+'/')
 #            shutil.make_archive(filename + filenames[filenr+2], 'zip', filename + filenames[filenr+2]+'/')
 #            shutil.copy(filename + filenames[filenr+2] + '.zip', filename + filenames[filenr+2] + '.kmz')
@@ -411,13 +421,18 @@ def track_to_kml(filename='Picarro', timelag=16, vrange=[380.0,420.0,1.80,2.0,0.
                     except ValueError:
                         print('Not valid value in measnr., skipping')
                 if data[6] % 1 == 0:
-                    with open(filename + filenames[0] + '.kml', 'w') as filepos:
+                    with open(filename + filenames[0] + '.tmp', 'w') as filepos:
                         filepos.write(KML.etree.tounicode(curr_pos, pretty_print=True))
-                    with open(filename + filenames[1] + '.kml', 'w') as filetrck:
+                    os.relace(filename + filenames[0] + '.tmp', filename + filenames[0] + '.kml')    
+                    
+                    with open(filename + filenames[1] + '.tmp', 'w') as filetrck:
                         filetrck.write(KML.etree.tounicode(flighttrack, pretty_print=True))
+                    os.replace(filename + filenames[1] + '.tmp', filename + filenames[1] + '.kml')
+
                     for filenr, concGAS in enumerate(conckml):
-                        with open(filename + filenames[filenr+2] + '.kml', 'w') as file:
+                        with open(filename + filenames[filenr+2] + '.tmp', 'w') as file:
                             file.write(KML.etree.tounicode(concGAS, pretty_print=True))
+                        os.replace(filename + filenames[filenr+2] + '.tmp', filename + filenames[filenr+2] + '.kml')    
 #                        try:
 #                            os.remove(filename + filenames[filenr+2] + '.kml')
 #                        except:
@@ -432,13 +447,19 @@ def track_to_kml(filename='Picarro', timelag=16, vrange=[380.0,420.0,1.80,2.0,0.
             time.sleep(0.2)
     except KeyboardInterrupt:
         print('Keyboard interrupt detected, ending tracking')
-        with open(filename + filenames[0] + '.kml', 'w') as filepos:
+        with open(filename + filenames[0] + '.tmp', 'w') as filepos:
                     filepos.write(KML.etree.tounicode(curr_pos, pretty_print=True))
-        with open(filename + filenames[1] + '.kml', 'w') as filetrck:
+        os.replace(filename + filenames[0] + '.tmp', filename + filenames[0] + '.kml') 
+
+        with open(filename + filenames[1] + '.tmp', 'w') as filetrck:
             filetrck.write(KML.etree.tounicode(flighttrack, pretty_print=True))
+        os.replace(filename + filenames[1] + '.tmp', filename + filenames[1] + '.kml')    
         for filenr, concGAS in enumerate(conckml):
-            with open(filename + filenames[filenr+2] + '.kml', 'w') as file:
+            with open(filename + filenames[filenr+2] + '.tmp', 'w') as file:
                 file.write(KML.etree.tounicode(concGAS, pretty_print=True))
+            os.replace(filename + filenames[filenr+2] + '.tmp', filename + filenames[filenr+2] + '.kml')  
+
+    # Maybe copy to backup folder          
     finally:
         folder = datetime.datetime.now().strftime(config['Paths']['kmlpath'] + '%y%m%dt%H%M%S_kml_files/')
         os.mkdir(folder)
@@ -537,6 +558,10 @@ def export_colorbar(cmap, bounds, label, cfg):
     fig.savefig(cfg['Paths']['iconfolder'] + 'colorbar_' + label[:4].strip() + '.png')
 
     return
+
+
+
+
 
 
 if __name__ == '__main__':
